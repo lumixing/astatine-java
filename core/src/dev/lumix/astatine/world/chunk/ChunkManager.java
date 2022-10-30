@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import dev.lumix.astatine.engine.Camera;
+import dev.lumix.astatine.world.WorldGeneration;
 import dev.lumix.astatine.world.block.BlockType;
 
 public class ChunkManager {
@@ -14,9 +15,12 @@ public class ChunkManager {
     public static int CHUNK_RADIUS = 3;
     private final Chunk[][] chunks = new Chunk[CHUNKS_X][CHUNKS_Y];
     private final Chunk[] loadedChunks = new Chunk[(int) Math.pow(CHUNK_RADIUS * 2, 2)];
+    private WorldGeneration worldGeneration;
 
     public ChunkManager() {
+        worldGeneration = new WorldGeneration(this);
         initChunks();
+        worldGeneration.generateTerrain();
     }
 
     private void initChunks() {
@@ -61,10 +65,10 @@ public class ChunkManager {
             for (int x = cx - CHUNK_RADIUS; x < cx + CHUNK_RADIUS; x++) {
                 i++;
                 if (!(x < CHUNKS_X && x >= 0 && y >= 0 && y < CHUNKS_Y)) {
-                    Gdx.app.log("chmgr.loadch", String.format("[%d] (%d, %d) NULL", i, x, y));
+//                    Gdx.app.log("chmgr.loadch", String.format("[%d] (%d, %d) NULL", i, x, y));
                     loadedChunks[i] = null;
                 } else {
-                    Gdx.app.log("chmgr.loadch", String.format("[%d] (%d, %d)", i, x, y));
+//                    Gdx.app.log("chmgr.loadch", String.format("[%d] (%d, %d)", i, x, y));
                     loadedChunks[i] = chunks[x][y];
                     totalChunksLoaded++;
                 }
@@ -82,6 +86,24 @@ public class ChunkManager {
 //            Gdx.app.log("chmgr.rendloadch", String.format("[%d] (%d, %d)", i, chunk.getX(), chunk.getY()));
             renderChunk(camera, sb, chunk.getX(), chunk.getY());
         }
+    }
+
+    public Chunk getChunk(int x, int y) {
+        if (!(x < CHUNKS_X && x >= 0 && y >= 0 && y < CHUNKS_Y)) {
+            return null;
+        }
+
+        return chunks[x][y];
+    }
+
+    public BlockType getBlockType(int x, int y) {
+        Chunk chunk = getChunk(MathUtils.floor(x / Chunk.CHUNK_SIZE), MathUtils.floor(y / Chunk.CHUNK_SIZE));
+        return chunk.getBlockType(x % Chunk.CHUNK_SIZE, y % Chunk.CHUNK_SIZE);
+    }
+
+    public void setBlockType(int x, int y, BlockType type) {
+        Chunk chunk = getChunk(MathUtils.floor(x / Chunk.CHUNK_SIZE), MathUtils.floor(y / Chunk.CHUNK_SIZE));
+        chunk.setBlockType(x % Chunk.CHUNK_SIZE, y % Chunk.CHUNK_SIZE, type);
     }
 
     public int getTotalChunksLoaded() {

@@ -1,9 +1,9 @@
 package dev.lumix.astatine.world;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import dev.lumix.astatine.engine.Camera;
+import dev.lumix.astatine.world.block.BlockType;
 import dev.lumix.astatine.world.chunk.ChunkManager;
 
 public class World {
