@@ -27,7 +27,7 @@ public class GameScreen implements Screen {
         font = new BitmapFont();
         resize(1280, 720);
         camera.zoom = 0.5f;
-        camera.setPosition(0, 0);
+        camera.setPosition(0, 1500);
         debugSB = new SpriteBatch();
     }
 
@@ -44,7 +44,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(SpriteBatch sb) {
-        Gdx.gl.glClearColor(1, 0, 1, 1);
+        Gdx.gl.glClearColor(31/255f, 203/255f, 255/255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 

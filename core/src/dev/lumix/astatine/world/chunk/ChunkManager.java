@@ -10,8 +10,8 @@ import dev.lumix.astatine.world.block.BlockType;
 public class ChunkManager {
     private int totalChunksLoaded = 0;
     public static int TILE_SIZE = 8;
-    public static int CHUNKS_X = 64;
-    public static int CHUNKS_Y = 64;
+    public static int CHUNKS_X = 24;
+    public static int CHUNKS_Y = 16;
     public static int CHUNK_RADIUS = 3;
     private final Chunk[][] chunks = new Chunk[CHUNKS_X][CHUNKS_Y];
     private final Chunk[] loadedChunks = new Chunk[(int) Math.pow(CHUNK_RADIUS * 2, 2)];
@@ -28,7 +28,7 @@ public class ChunkManager {
             for (int x = 0; x < CHUNKS_X; x++) {
                 Gdx.app.log("ChunkManager.initChunks", String.format("(%d,%d)", x, y));
                 chunks[x][y] = new Chunk(this, x, y);
-                chunks[x][y].fillWithBlocks(MathUtils.randomBoolean() ? BlockType.DIRT : BlockType.STONE);
+//                chunks[x][y].fillWithBlocks(MathUtils.randomBoolean() ? BlockType.DIRT : BlockType.STONE);
                 chunks[x][y].setGenerated(true);
             }
         }
