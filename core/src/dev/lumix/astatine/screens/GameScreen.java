@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.lumix.astatine.engine.Camera;
 import dev.lumix.astatine.engine.Screen;
 import dev.lumix.astatine.world.World;
+import dev.lumix.astatine.world.block.BlockType;
 
 public class GameScreen implements Screen {
     private Camera camera;
@@ -27,7 +28,7 @@ public class GameScreen implements Screen {
         font = new BitmapFont();
         resize(1280, 720);
         camera.zoom = 0.5f;
-        camera.setPosition(0, 1500);
+        camera.setPosition(0, 0);
         debugSB = new SpriteBatch();
     }
 
@@ -37,8 +38,14 @@ public class GameScreen implements Screen {
             Gdx.app.exit();
         }
 
-        camera.update();
+        if (Gdx.input.isTouched()) {
+            Vector2 unprojPos = camera.unprojectCoordinates(Gdx.input.getX(), Gdx.input.getY());
+            Vector2 blockPos = unprojPos.cpy().scl(1/8f);
 
+            world.getChunkManager().setBlockType((int) blockPos.x, (int) blockPos.y, BlockType.AIR);
+        }
+
+        camera.update();
         world.update(camera);
     }
 

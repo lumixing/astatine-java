@@ -46,21 +46,21 @@ public class Camera extends OrthographicCamera {
 
     @Override
     public void update() {
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            updatePosition(0, 10);
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            updatePosition(-10, 0);
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            updatePosition(0, -10);
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            updatePosition(10, 0);
-        }
+//        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+//            updatePosition(0, 10);
+//        }
+//
+//        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+//            updatePosition(-10, 0);
+//        }
+//
+//        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+//            updatePosition(0, -10);
+//        }
+//
+//        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+//            updatePosition(10, 0);
+//        }
 
         float left = zoom * -viewportWidth / 2 + virtualViewport.getVirtualWidth() * origin.x;
         float right = zoom * viewportWidth / 2 + virtualViewport.getVirtualWidth() * origin.x;

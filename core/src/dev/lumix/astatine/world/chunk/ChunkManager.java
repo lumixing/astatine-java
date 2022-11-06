@@ -109,4 +109,8 @@ public class ChunkManager {
     public int getTotalChunksLoaded() {
         return totalChunksLoaded;
     }
+
+    public static int pixelToBlockPosition(float p) {
+        return (int) p / TILE_SIZE;
+    }
 }
