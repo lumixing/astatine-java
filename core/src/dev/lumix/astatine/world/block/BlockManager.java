@@ -5,7 +5,7 @@ import dev.lumix.astatine.engine.drawables.ResourceManager;
 import java.util.HashMap;
 
 public class BlockManager {
-    private static final HashMap<BlockType, Block> blocks = new HashMap<BlockType, Block>();
+    private static final HashMap<BlockType, Block> blocks = new HashMap<>();
     private static final BlockType[] blockTypeArray = BlockType.values();
 
     static {

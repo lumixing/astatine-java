@@ -3,114 +3,83 @@ package dev.lumix.astatine.world.chunk;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import dev.lumix.astatine.engine.Camera;
 import dev.lumix.astatine.world.WorldGeneration;
 import dev.lumix.astatine.world.block.BlockType;
 import dev.lumix.astatine.world.entity.BlockBody;
-import dev.lumix.astatine.world.entity.Entity;
 
 public class ChunkManager {
-    private int totalChunksLoaded = 0;
     public static int TILE_SIZE = 8;
     public static int CHUNKS_X = 24;
     public static int CHUNKS_Y = 16;
     public static int CHUNK_RADIUS = 3;
+
+    private int totalChunksLoaded = 0;
     private final Chunk[][] chunks = new Chunk[CHUNKS_X][CHUNKS_Y];
     private final Chunk[] loadedChunks = new Chunk[(int) Math.pow(CHUNK_RADIUS * 2, 2)];
-    private WorldGeneration worldGeneration;
-    private Array<BlockBody> blockBodies = new Array<>();
+    private final Array<BlockBody> blockBodies = new Array<>();
 
     public ChunkManager() {
-        worldGeneration = new WorldGeneration(this);
         initChunks();
+        WorldGeneration worldGeneration = new WorldGeneration(this);
         worldGeneration.generateTerrain();
     }
 
     private void initChunks() {
         for (int y = 0; y < CHUNKS_Y; y++) {
             for (int x = 0; x < CHUNKS_X; x++) {
-                Gdx.app.log("ChunkManager.initChunks", String.format("(%d,%d)", x, y));
-                chunks[x][y] = new Chunk(this, x, y);
-//                chunks[x][y].fillWithBlocks(MathUtils.randomBoolean() ? BlockType.DIRT : BlockType.STONE);
+                Gdx.app.log("ChunkManager.initChunks", String.format("(%d, %d)", x, y));
+                chunks[x][y] = new Chunk(x, y);
                 chunks[x][y].setGenerated(true);
             }
         }
     }
 
-    // only used for testing purposes with small worlds
-    public void renderAllChunks(Camera camera, SpriteBatch sb) {
-        for (int y = 0; y < CHUNKS_Y; y++) {
-            for (int x = 0; x < CHUNKS_X; x++) {
-                Gdx.app.log("ChunkManager.renderAllChunks", String.format("(%d,%d)", x, y));
-                chunks[x][y].render(camera, sb);
-            }
-        }
-    }
-
-    public void renderChunk(Camera camera, SpriteBatch sb, int x, int y) {
-        // if out of bounds then dont render
-        if (!(x < CHUNKS_X && x >= 0 && y >= 0 && y < CHUNKS_Y)) {
-            return;
-        }
-
-        chunks[x][y].render(camera, sb);
+    public void renderChunk(SpriteBatch sb, int x, int y) {
+        Chunk chunk = getChunk(x, y);
+        if (chunk == null) return; // if out of bounds then dont render
+        chunk.render(sb);
     }
 
     public void loadChunks(int cx, int cy) {
         // loading optimization (hardcoded for red=3) needs fixing for null center chunk
-        if (loadedChunks[21] != null && loadedChunks[21].getX() == cx && loadedChunks[21].getY() == cy) {
+        if (loadedChunks[21] != null && loadedChunks[21].getX() == cx && loadedChunks[21].getY() == cy)
             return;
-        }
 
         totalChunksLoaded = 0;
-        int i = -1;
+        int i = 0;
         for (int y = cy - CHUNK_RADIUS; y < cy + CHUNK_RADIUS; y++) {
             for (int x = cx - CHUNK_RADIUS; x < cx + CHUNK_RADIUS; x++) {
+                loadedChunks[i] = getChunk(x, y);
+                if (loadedChunks[i] != null) totalChunksLoaded++;
                 i++;
-                if (!(x < CHUNKS_X && x >= 0 && y >= 0 && y < CHUNKS_Y)) {
-//                    Gdx.app.log("chmgr.loadch", String.format("[%d] (%d, %d) NULL", i, x, y));
-                    loadedChunks[i] = null;
-                } else {
-//                    Gdx.app.log("chmgr.loadch", String.format("[%d] (%d, %d)", i, x, y));
-                    loadedChunks[i] = chunks[x][y];
-                    totalChunksLoaded++;
-                }
             }
         }
     }
 
-    public void renderLoadedChunks(Camera camera, SpriteBatch sb) {
-        int i = -1;
+    public void renderLoadedChunks(SpriteBatch sb) {
         for (Chunk chunk : loadedChunks) {
-            i++;
-            if (chunk == null) {
-                continue;
-            }
-//            Gdx.app.log("chmgr.rendloadch", String.format("[%d] (%d, %d)", i, chunk.getX(), chunk.getY()));
-            renderChunk(camera, sb, chunk.getX(), chunk.getY());
+            if (chunk == null) continue;
+            renderChunk(sb, chunk.getX(), chunk.getY());
         }
     }
 
     public Chunk getChunk(int x, int y) {
-        if (!(x < CHUNKS_X && x >= 0 && y >= 0 && y < CHUNKS_Y)) {
+        if (!(x < CHUNKS_X && x >= 0 && y >= 0 && y < CHUNKS_Y))
             return null;
-        }
-
         return chunks[x][y];
     }
 
-    public BlockType getBlockType(int x, int y) {
+    public BlockType getBlockType(float x, float y) {
         Chunk chunk = getChunk(MathUtils.floor(x / Chunk.CHUNK_SIZE), MathUtils.floor(y / Chunk.CHUNK_SIZE));
-        return chunk.getBlockType(x % Chunk.CHUNK_SIZE, y % Chunk.CHUNK_SIZE);
+        if (chunk == null) return null;
+        return chunk.getBlockType((int) (x % Chunk.CHUNK_SIZE), (int) (y % Chunk.CHUNK_SIZE));
     }
 
-    public void setBlockType(int x, int y, BlockType type) {
+    public void setBlockType(float x, float y, BlockType type) {
         Chunk chunk = getChunk(MathUtils.floor(x / Chunk.CHUNK_SIZE), MathUtils.floor(y / Chunk.CHUNK_SIZE));
-        chunk.setBlockType(x % Chunk.CHUNK_SIZE, y % Chunk.CHUNK_SIZE, type);
+        chunk.setBlockType((int) (x % Chunk.CHUNK_SIZE), (int) (y % Chunk.CHUNK_SIZE), type);
     }
 
     public int getTotalChunksLoaded() {
@@ -121,22 +90,16 @@ public class ChunkManager {
         return (int) p / TILE_SIZE;
     }
 
-    public void loadBlockBodies(World physicsWorld, int x, int y) {
-        Chunk chunk = getChunk(x, y);
-        if (chunk == null) return;
-        chunk.loadBlockBodies(physicsWorld);
-    }
-
     public void unloadAllBlockBodies(World physicsWorld) {
         for (BlockBody blockBody : blockBodies) {
-            physicsWorld.destroyBody(blockBody.body);
+            physicsWorld.destroyBody(blockBody.getBody());
         }
-        blockBodies = new Array<>();
+        blockBodies.clear();
     }
 
     public void loadBlockBodiesNear(World physicsWorld, int x, int y) {
-        for (int i = x - 5; i < x + 5; i++) {
-            for (int j = y - 5; j < y + 5; j++) {
+        for (int i = x - 3; i < x + 3; i++) {
+            for (int j = y - 3; j < y + 3; j++) {
                 loadBlockBodyAt(physicsWorld, i, j);
             }
         }
@@ -145,7 +108,8 @@ public class ChunkManager {
     private void loadBlockBodyAt(World physicsWorld, int x, int y) {
         BlockType blockType = getBlockType(x, y);
         if (blockType == null || blockType == BlockType.AIR) return;
-        BlockBody blockBody = new BlockBody(physicsWorld, x*8+4, y*8+4);
+
+        BlockBody blockBody = new BlockBody(physicsWorld, x * TILE_SIZE + TILE_SIZE / 2f, y * TILE_SIZE + TILE_SIZE / 2f);
         blockBodies.add(blockBody);
     }
 }

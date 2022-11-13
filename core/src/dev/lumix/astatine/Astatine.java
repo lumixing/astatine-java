@@ -10,7 +10,7 @@ import dev.lumix.astatine.screens.GameScreen;
 
 public class Astatine extends ApplicationAdapter {
     public static Astatine instance;
-    protected SpriteBatch batch;
+    protected SpriteBatch sb;
 
     @Override
     public void create() {
@@ -22,8 +22,8 @@ public class Astatine extends ApplicationAdapter {
         ResourceManager.getInstance().loadTexturedDrawable("ore", "blocks/ore.png");
         ResourceManager.getInstance().loadTexturedDrawable("lumix", "entities/lumix.png");
 
-        batch = new SpriteBatch();
-        batch.enableBlending();
+        sb = new SpriteBatch();
+        sb.enableBlending();
 
         ScreenManager.setScreen(new GameScreen());
     }
@@ -34,7 +34,7 @@ public class Astatine extends ApplicationAdapter {
         Gdx.gl.glClearColor(0, 0, 1, 1);
 
         if (ScreenManager.getCurrent() != null) {
-            ScreenManager.getCurrent().render(batch);
+            ScreenManager.getCurrent().render(sb);
             ScreenManager.getCurrent().update();
         }
     }

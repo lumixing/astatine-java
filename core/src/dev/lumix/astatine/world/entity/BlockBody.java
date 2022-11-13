@@ -5,14 +5,12 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class BlockBody extends Entity {
     public BlockBody(World physicsWorld, float x, float y) {
-        super(BodyDef.BodyType.StaticBody, 4, 4, 0.3f, 1f, 0f, null);
+        super(BodyDef.BodyType.StaticBody, 4, 4, 0f, 0f, 0f, null);
         setPosition(x, y);
         createBody(physicsWorld);
         createFixture();
     }
 
     @Override
-    public void update() {
-
-    }
+    public void update() { }
 }

@@ -1,7 +1,6 @@
 package dev.lumix.astatine.world.block;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import dev.lumix.astatine.engine.Camera;
 import dev.lumix.astatine.engine.drawables.Drawable;
 
 public class Block {
@@ -15,7 +14,7 @@ public class Block {
         this.collidable = collidable;
     }
 
-    public void render(Camera camera, SpriteBatch sb, float x, float y) {
+    public void render(SpriteBatch sb, float x, float y) {
         drawable.render(sb, x, y);
     }
 
