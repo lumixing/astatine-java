@@ -3,9 +3,15 @@ package dev.lumix.astatine.world.chunk;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import dev.lumix.astatine.engine.Camera;
 import dev.lumix.astatine.world.WorldGeneration;
 import dev.lumix.astatine.world.block.BlockType;
+import dev.lumix.astatine.world.entity.BlockBody;
+import dev.lumix.astatine.world.entity.Entity;
 
 public class ChunkManager {
     private int totalChunksLoaded = 0;
@@ -16,6 +22,7 @@ public class ChunkManager {
     private final Chunk[][] chunks = new Chunk[CHUNKS_X][CHUNKS_Y];
     private final Chunk[] loadedChunks = new Chunk[(int) Math.pow(CHUNK_RADIUS * 2, 2)];
     private WorldGeneration worldGeneration;
+    private Array<BlockBody> blockBodies = new Array<>();
 
     public ChunkManager() {
         worldGeneration = new WorldGeneration(this);
@@ -112,5 +119,33 @@ public class ChunkManager {
 
     public static int pixelToBlockPosition(float p) {
         return (int) p / TILE_SIZE;
+    }
+
+    public void loadBlockBodies(World physicsWorld, int x, int y) {
+        Chunk chunk = getChunk(x, y);
+        if (chunk == null) return;
+        chunk.loadBlockBodies(physicsWorld);
+    }
+
+    public void unloadAllBlockBodies(World physicsWorld) {
+        for (BlockBody blockBody : blockBodies) {
+            physicsWorld.destroyBody(blockBody.body);
+        }
+        blockBodies = new Array<>();
+    }
+
+    public void loadBlockBodiesNear(World physicsWorld, int x, int y) {
+        for (int i = x - 5; i < x + 5; i++) {
+            for (int j = y - 5; j < y + 5; j++) {
+                loadBlockBodyAt(physicsWorld, i, j);
+            }
+        }
+    }
+
+    private void loadBlockBodyAt(World physicsWorld, int x, int y) {
+        BlockType blockType = getBlockType(x, y);
+        if (blockType == null || blockType == BlockType.AIR) return;
+        BlockBody blockBody = new BlockBody(physicsWorld, x*8+4, y*8+4);
+        blockBodies.add(blockBody);
     }
 }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import dev.lumix.astatine.engine.Camera;
 import dev.lumix.astatine.engine.Screen;
 import dev.lumix.astatine.world.World;
@@ -24,11 +25,11 @@ public class GameScreen implements Screen {
     public void create() {
         camera = new Camera();
         texture = new Texture("badlogic.jpg");
-        world = new World();
+        world = new World(camera);
         font = new BitmapFont();
         resize(1280, 720);
         camera.zoom = 0.5f;
-        camera.setPosition(0, 0);
+        camera.setPosition(300, 3800);
         debugSB = new SpriteBatch();
     }
 
@@ -45,6 +46,9 @@ public class GameScreen implements Screen {
             world.getChunkManager().setBlockType((int) blockPos.x, (int) blockPos.y, BlockType.AIR);
         }
 
+        Vector3 desired = new Vector3(camera.position.x, camera.position.y, 0);
+        camera.position.set(desired.lerp(new Vector3(world.getPlayer().body.getPosition().x, world.getPlayer().body.getPosition().y, 0), 1f));
+//        camera.setPosition(world.getTesty().body.getPosition().x, world.getTesty().body.getPosition().y);
         camera.update();
         world.update(camera);
     }
@@ -77,6 +81,7 @@ public class GameScreen implements Screen {
         font.draw(debugSB, String.format("chunk: (%d, %d)", MathUtils.floor(chunkPos.x), MathUtils.floor(chunkPos.y)), 4, 716-60);
         font.draw(debugSB, String.format("center chunk: (%d, %d)", MathUtils.floor(centerChunkPos.x), MathUtils.floor(centerBlockPos.y)), 4, 716-80);
         font.draw(debugSB, String.format("loaded chunks: %d", world.getChunkManager().getTotalChunksLoaded()), 4, 716-100);
+//        font.draw(debugSB, String.format("testy pos: %s", world.getTesty().body.getPosition()), 4, 716-120);
 
         debugSB.end();
     }

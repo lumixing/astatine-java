@@ -2,7 +2,6 @@ package dev.lumix.astatine;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import dev.lumix.astatine.engine.ScreenManager;
@@ -21,6 +20,7 @@ public class Astatine extends ApplicationAdapter {
         ResourceManager.getInstance().loadTexturedDrawable("dirt", "blocks/dirt.png");
         ResourceManager.getInstance().loadTexturedDrawable("stone", "blocks/stone.png");
         ResourceManager.getInstance().loadTexturedDrawable("ore", "blocks/ore.png");
+        ResourceManager.getInstance().loadTexturedDrawable("lumix", "entities/lumix.png");
 
         batch = new SpriteBatch();
         batch.enableBlending();
